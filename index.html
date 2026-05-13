@@ -1,0 +1,1357 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Knowledge Portal — TejKiran</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810;
+    --bg2: #080c18;
+    --bg3: #0d1220;
+    --card: #0f1525;
+    --card2: #141c2e;
+    --border: rgba(79,156,255,0.1);
+    --border2: rgba(79,156,255,0.28);
+    --accent: #4f9cff;
+    --accent2: #7eb8ff;
+    --green: #3ecf8e;
+    --amber: #f6b93b;
+    --red: #e74c3c;
+    --pink: #ff6b9d;
+    --purple: #a78bfa;
+    --cyan: #22d3ee;
+    --text: #e8edf8;
+    --text2: #8fa3c8;
+    --text3: #3d4f6e;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+    --r: 10px;
+    --r2: 16px;
+    --r3: 22px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BG */
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(79,156,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,156,255,0.025) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  .orb1 {
+    position: fixed; width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(79,156,255,0.07) 0%, transparent 65%);
+    top: -300px; left: -250px; pointer-events: none; z-index: 0;
+  }
+  .orb2 {
+    position: fixed; width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(62,207,142,0.06) 0%, transparent 65%);
+    bottom: -150px; right: -150px; pointer-events: none; z-index: 0;
+  }
+  .orb3 {
+    position: fixed; width: 400px; height: 400px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(167,139,250,0.04) 0%, transparent 65%);
+    top: 50%; right: 5%; pointer-events: none; z-index: 0;
+  }
+
+  /* ====================== SCREEN MANAGER ====================== */
+  #login-screen {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center; padding: 2rem;
+    background: var(--bg);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  #login-screen.hide {
+    opacity: 0;
+    transform: scale(0.96);
+    pointer-events: none;
+  }
+
+  #dashboard-screen {
+    position: relative; z-index: 1;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.55s ease 0.1s, transform 0.55s ease 0.1s;
+    pointer-events: none;
+  }
+
+  #dashboard-screen.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+
+  /* ====================== LOGIN ====================== */
+  .login-wrap {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 460px;
+    animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .login-card {
+    background: linear-gradient(145deg, #0f1628, #0c1220);
+    border: 1px solid var(--border2);
+    border-radius: var(--r3);
+    padding: 3rem 3.2rem;
+    position: relative; overflow: hidden;
+  }
+
+  .login-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--accent) 40%, var(--green) 70%, transparent 100%);
+  }
+
+  .login-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(79,156,255,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .login-dot {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(79,156,255,0.08);
+    border: 1px solid rgba(79,156,255,0.18);
+    padding: 5px 14px; border-radius: 100px;
+    font-size: 11px; color: var(--accent); font-family: var(--mono);
+    margin-bottom: 2.2rem; letter-spacing: 0.07em;
+  }
+
+  .login-dot::before { content: '●'; font-size: 7px; animation: blink 1.4s ease infinite; }
+
+  .login-title {
+    font-size: 2.6rem; font-weight: 800; line-height: 1.05;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(140deg, #fff 0%, var(--accent2) 55%, var(--green) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .login-sub {
+    color: var(--text2); font-size: 0.88rem; margin-bottom: 2.4rem;
+    font-family: var(--mono); letter-spacing: 0.03em;
+  }
+
+  .field { margin-bottom: 1.2rem; }
+
+  .field label {
+    display: block; font-size: 10.5px; color: var(--text3);
+    font-family: var(--mono); margin-bottom: 8px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  .field input {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border2);
+    border-radius: var(--r);
+    padding: 13px 16px;
+    color: var(--text);
+    font-family: var(--mono); font-size: 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+  }
+
+  .field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79,156,255,0.1);
+    background: rgba(79,156,255,0.04);
+  }
+
+  .field input::placeholder { color: var(--text3); }
+
+  .enter-btn {
+    width: 100%; margin-top: 0.6rem;
+    background: linear-gradient(135deg, #1a6bff 0%, #0d4fd1 100%);
+    border: none; border-radius: var(--r);
+    padding: 14px;
+    color: white; font-family: var(--sans); font-size: 1rem; font-weight: 700;
+    cursor: pointer; letter-spacing: 0.04em;
+    transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+    position: relative; overflow: hidden;
+  }
+
+  .enter-btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent);
+    pointer-events: none;
+  }
+
+  .enter-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(79,156,255,0.35); filter: brightness(1.1); }
+  .enter-btn:active { transform: scale(0.98); }
+
+  .login-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 1.4rem 0;
+  }
+  .login-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .login-divider span { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+
+  .login-social {
+    display: flex; gap: 10px;
+  }
+
+  .social-hint {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--r); padding: 10px;
+    font-size: 11px; color: var(--text3); font-family: var(--mono);
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .social-hint:hover { border-color: var(--border2); color: var(--text2); }
+
+  /* ====================== TOPBAR ====================== */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: rgba(5,8,16,0.88);
+    backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .topbar-brand { display: flex; align-items: center; gap: 12px; }
+
+  .brand-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  .brand-text { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; }
+  .brand-text span { display: block; font-size: 10px; color: var(--text3); font-family: var(--mono); font-weight: 400; letter-spacing: 0.05em; margin-top: -2px; }
+
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+  .user-chip {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 100px; padding: 5px 14px 5px 5px;
+  }
+
+  .user-ava {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: white;
+  }
+
+  .user-info-small { }
+  .u-name { font-size: 13px; font-weight: 700; }
+  .u-email { font-size: 10px; color: var(--text2); font-family: var(--mono); }
+
+  .exit-btn {
+    background: none; border: 1px solid var(--border); border-radius: 8px;
+    padding: 7px 14px; color: var(--text2); font-family: var(--mono); font-size: 11px;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 0.04em;
+  }
+  .exit-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* ====================== HERO ====================== */
+  .hero {
+    padding: 3.5rem 2.5rem 2rem;
+    max-width: 1320px; margin: 0 auto;
+    position: relative;
+  }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(62,207,142,0.07); border: 1px solid rgba(62,207,142,0.18);
+    padding: 5px 14px; border-radius: 100px;
+    font-size: 11px; color: var(--green); font-family: var(--mono);
+    margin-bottom: 1.4rem; letter-spacing: 0.05em;
+  }
+
+  .hero h1 {
+    font-size: 3.2rem; font-weight: 800; line-height: 1.08;
+    margin-bottom: 0.8rem;
+  }
+
+  .hero h1 .static { color: var(--text); }
+  .hero h1 .dynamic {
+    background: linear-gradient(95deg, var(--green) 0%, var(--cyan) 50%, var(--accent) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    color: var(--text2); font-size: 1rem; max-width: 640px;
+    line-height: 1.7; font-weight: 400;
+  }
+
+  /* ====================== STATS ====================== */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 14px; padding: 0 2.5rem 2.5rem;
+    max-width: 1320px; margin: 0 auto;
+  }
+
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 1.2rem 1.4rem;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative; overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    opacity: 0; transition: opacity 0.2s;
+  }
+
+  .stat-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+  .stat-card:hover::before { opacity: 1; }
+
+  .sc-a::before { background: linear-gradient(90deg, var(--accent), transparent); }
+  .sc-g::before { background: linear-gradient(90deg, var(--green), transparent); }
+  .sc-am::before { background: linear-gradient(90deg, var(--amber), transparent); }
+  .sc-p::before { background: linear-gradient(90deg, var(--purple), transparent); }
+  .sc-pk::before { background: linear-gradient(90deg, var(--pink), transparent); }
+  .sc-c::before { background: linear-gradient(90deg, var(--cyan), transparent); }
+
+  .stat-emoji { font-size: 22px; margin-bottom: 8px; display: block; }
+  .stat-val { font-size: 2rem; font-weight: 800; font-family: var(--mono); line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--text2); margin-top: 4px; font-family: var(--mono); letter-spacing: 0.04em; }
+
+  /* ====================== SECTION LABEL ====================== */
+  .sec-label {
+    font-size: 11px; color: var(--text3); font-family: var(--mono);
+    text-transform: uppercase; letter-spacing: 0.18em;
+    padding: 2.2rem 2.5rem 1.1rem;
+    max-width: 1320px; margin: 0 auto;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .sec-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--border2), transparent);
+  }
+
+  /* ====================== MAIN GRID ====================== */
+  .mgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 18px;
+    padding: 0 2.5rem;
+    max-width: 1320px; margin: 0 auto;
+  }
+
+  .mgrid.full { grid-template-columns: 1fr; }
+
+  .scard {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r2); overflow: hidden;
+    transition: border-color 0.25s, transform 0.2s;
+  }
+
+  .scard:hover { border-color: var(--border2); transform: translateY(-2px); }
+
+  .ch {
+    padding: 1.2rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .ct {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.9rem; font-weight: 700; letter-spacing: 0.02em;
+  }
+
+  .ci {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+  }
+
+  .cb { padding: 1.3rem 1.5rem; }
+
+  /* BADGE */
+  .badge {
+    display: inline-block; font-size: 9.5px; font-family: var(--mono);
+    padding: 2px 9px; border-radius: 100px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .b-green { background: rgba(62,207,142,0.1); color: var(--green); border: 1px solid rgba(62,207,142,0.2); }
+  .b-blue { background: rgba(79,156,255,0.1); color: var(--accent); border: 1px solid rgba(79,156,255,0.2); }
+  .b-amber { background: rgba(246,185,59,0.09); color: var(--amber); border: 1px solid rgba(246,185,59,0.2); }
+  .b-red { background: rgba(231,76,60,0.09); color: var(--red); border: 1px solid rgba(231,76,60,0.2); }
+  .b-purple { background: rgba(167,139,250,0.09); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+  .b-cyan { background: rgba(34,211,238,0.09); color: var(--cyan); border: 1px solid rgba(34,211,238,0.2); }
+  .b-pink { background: rgba(255,107,157,0.09); color: var(--pink); border: 1px solid rgba(255,107,157,0.2); }
+
+  /* API ITEM */
+  .api-item {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 1rem 1.1rem;
+    margin-bottom: 9px; transition: border-color 0.2s;
+  }
+  .api-item:hover { border-color: var(--border2); }
+  .api-item:last-child { margin-bottom: 0; }
+  .api-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; margin-bottom: 5px; }
+  .api-name { font-weight: 700; font-size: 0.9rem; }
+  .api-url {
+    font-family: var(--mono); font-size: 10.5px; color: var(--cyan);
+    background: rgba(34,211,238,0.07); border: 1px solid rgba(34,211,238,0.12);
+    border-radius: 5px; padding: 2px 8px; display: inline-block; margin-bottom: 5px;
+  }
+  .api-desc { font-size: 11.5px; color: var(--text2); line-height: 1.55; }
+
+  /* AUTH */
+  .auth-row {
+    display: flex; align-items: flex-start; gap: 13px;
+    padding: 1.1rem 0; border-bottom: 1px solid var(--border);
+  }
+  .auth-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .auth-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0;
+  }
+
+  .auth-title { font-weight: 700; font-size: 0.88rem; margin-bottom: 4px; }
+  .auth-desc { font-size: 11.5px; color: var(--text2); line-height: 1.55; }
+
+  /* CODE */
+  .code-block {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 0.9rem 1.1rem;
+    font-family: var(--mono); font-size: 11.5px; line-height: 1.75;
+    margin-top: 8px; overflow-x: auto;
+  }
+  .c-com { color: var(--text3); }
+  .c-key { color: var(--accent); }
+  .c-val { color: var(--green); }
+  .c-str { color: var(--amber); }
+  .c-cmd { color: var(--pink); }
+
+  /* KEY DISPLAY */
+  .key-row {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px; margin-top: 8px;
+  }
+  .key-val { font-family: var(--mono); font-size: 10.5px; color: var(--amber); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .copy-btn {
+    background: none; border: 1px solid var(--border); border-radius: 6px;
+    padding: 4px 10px; font-size: 10.5px; color: var(--text2);
+    cursor: pointer; font-family: var(--mono); flex-shrink: 0; transition: all 0.2s;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* LICENSE TABLE */
+  .lic-table { width: 100%; border-collapse: collapse; }
+  .lic-table th {
+    text-align: left; font-size: 10px; font-family: var(--mono);
+    color: var(--text3); text-transform: uppercase; letter-spacing: 0.12em;
+    padding: 0 12px 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .lic-table td {
+    padding: 11px 12px 11px 0; font-size: 12.5px;
+    border-bottom: 1px solid var(--border); vertical-align: middle;
+  }
+  .lic-table tr:last-child td { border-bottom: none; }
+  .lic-name { font-weight: 700; font-family: var(--mono); font-size: 13px; }
+  .lic-sub { font-size: 10px; color: var(--text2); margin-top: 2px; }
+
+  /* TOOLS GRID */
+  .tools-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+  }
+
+  .tool-tile {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 1rem 0.7rem;
+    text-align: center; transition: border-color 0.2s, transform 0.2s;
+    cursor: default;
+  }
+  .tool-tile:hover { border-color: var(--border2); transform: translateY(-3px); }
+  .tool-em { font-size: 22px; display: block; margin-bottom: 6px; }
+  .tool-name { font-size: 11.5px; font-weight: 700; margin-bottom: 2px; }
+  .tool-cat { font-size: 9.5px; color: var(--text3); font-family: var(--mono); }
+
+  /* PIPELINE */
+  .pipeline {
+    display: flex; align-items: center; gap: 0;
+    overflow-x: auto; padding-bottom: 6px;
+  }
+
+  .pipe-step {
+    display: flex; flex-direction: column; align-items: center;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 12px 14px;
+    min-width: 90px; text-align: center; flex-shrink: 0;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .pipe-step:hover { border-color: var(--border2); transform: translateY(-2px); }
+  .pipe-icon { font-size: 18px; margin-bottom: 5px; }
+  .pipe-name { font-size: 10.5px; font-weight: 700; }
+  .pipe-sub { font-size: 9px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+  .pipe-arr { color: var(--text3); font-size: 14px; padding: 0 4px; flex-shrink: 0; }
+
+  /* CHEAT SHEET */
+  .cheat-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;
+  }
+
+  .cheat-section { }
+  .cheat-label { font-size: 10px; color: var(--text3); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; }
+
+  /* GITHUB PROFILE CARD */
+  .github-card {
+    background: linear-gradient(140deg, #0d1117, #161b22);
+    border: 1px solid rgba(48,54,61,0.8);
+    border-radius: var(--r3); padding: 2rem;
+    position: relative; overflow: hidden;
+  }
+
+  .github-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, #2dba4e, #58a6ff, transparent);
+  }
+
+  .github-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 80% 20%, rgba(45,186,78,0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .gh-inner { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+
+  .gh-avatar {
+    width: 76px; height: 76px; border-radius: 50%;
+    background: linear-gradient(135deg, #2dba4e, #58a6ff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 800; color: white; flex-shrink: 0;
+    border: 3px solid rgba(45,186,78,0.3);
+    font-family: var(--mono);
+  }
+
+  .gh-info { flex: 1; min-width: 200px; }
+  .gh-name { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; }
+  .gh-handle { color: var(--text3); font-family: var(--mono); font-size: 0.88rem; margin-bottom: 12px; }
+
+  .gh-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #21262d; color: var(--text);
+    border: 1px solid rgba(240,246,252,0.1);
+    border-radius: var(--r); padding: 9px 18px;
+    font-size: 13px; font-weight: 700; text-decoration: none;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .gh-btn:hover {
+    background: #30363d; border-color: rgba(240,246,252,0.2);
+    transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  }
+
+  .gh-stats { display: flex; gap: 1.8rem; margin-top: 1.2rem; flex-wrap: wrap; }
+  .gh-stat { text-align: center; }
+  .gh-stat-val { font-size: 1.2rem; font-weight: 800; color: #58a6ff; }
+  .gh-stat-label { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
+
+  .gh-langs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
+  .lang-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 100px; padding: 3px 11px;
+    font-size: 11px; font-family: var(--mono); color: var(--text2);
+  }
+  .lang-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* LINKEDIN CARD */
+  .linkedin-card {
+    background: linear-gradient(140deg, #0a1628, #061020);
+    border: 1px solid rgba(10,102,194,0.3);
+    border-radius: var(--r3); padding: 2rem;
+    position: relative; overflow: hidden;
+  }
+
+  .linkedin-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, #0a66c2, #70b5f9, transparent);
+  }
+
+  .li-inner { display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+
+  .li-avatar {
+    width: 76px; height: 76px; border-radius: 50%;
+    background: linear-gradient(135deg, #0a66c2, #70b5f9);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 800; color: white; flex-shrink: 0;
+    border: 3px solid rgba(10,102,194,0.35);
+  }
+
+  .li-info { flex: 1; min-width: 200px; }
+  .li-name { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; }
+  .li-title { color: var(--text2); font-size: 0.88rem; margin-bottom: 12px; line-height: 1.5; }
+
+  .li-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #0a66c2; color: white;
+    border: none; border-radius: var(--r); padding: 10px 20px;
+    font-size: 13px; font-weight: 700; text-decoration: none;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s; cursor: pointer;
+  }
+  .li-btn:hover { background: #0052a3; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(10,102,194,0.4); }
+  .li-btn svg { width: 16px; height: 16px; fill: white; flex-shrink: 0; }
+
+  .li-stats { display: flex; gap: 1.8rem; margin-top: 1.2rem; flex-wrap: wrap; }
+  .li-stat { text-align: center; }
+  .li-stat-val { font-size: 1.2rem; font-weight: 800; color: #70b5f9; }
+  .li-stat-label { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
+
+  .skills-cloud { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 1rem; }
+  .skill-tag {
+    background: rgba(79,156,255,0.07); border: 1px solid rgba(79,156,255,0.15);
+    border-radius: 6px; padding: 4px 10px;
+    font-size: 11px; font-family: var(--mono); color: var(--accent2);
+  }
+
+  /* THANK YOU */
+  .thankyou {
+    background: linear-gradient(135deg, rgba(62,207,142,0.06), rgba(79,156,255,0.06));
+    border: 1px solid rgba(62,207,142,0.18);
+    border-radius: var(--r3); padding: 2.2rem 2.5rem;
+    text-align: center; position: relative; overflow: hidden;
+    margin: 2rem 2.5rem 0;
+    max-width: 1320px; margin-left: auto; margin-right: auto;
+  }
+
+  .thankyou::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(62,207,142,0.03), transparent);
+    animation: shimmer 4s ease infinite;
+  }
+
+  .ty-title {
+    font-size: 1.6rem; font-weight: 800; margin-bottom: 8px;
+    background: linear-gradient(90deg, var(--green), var(--cyan), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .ty-sub { color: var(--text2); font-size: 0.92rem; line-height: 1.65; max-width: 540px; margin: 0 auto 1.4rem; }
+
+  .ty-pills { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
+  .ty-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(79,156,255,0.09); border: 1px solid rgba(79,156,255,0.18);
+    border-radius: 100px; padding: 6px 16px;
+    font-family: var(--mono); font-size: 11.5px; color: var(--accent2);
+  }
+   footer {
+    border-top: 1px solid var(--border);
+    padding: 2.2rem 2.5rem;
+    max-width: 1320px; margin: 2rem auto 0;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+
+  .footer-left { font-size: 11.5px; font-family: var(--mono); color: var(--text3); }
+  .footer-links { display: flex; gap: 16px; align-items: center; }
+
+  .footer-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-family: var(--mono); text-decoration: none;
+    padding: 6px 14px; border-radius: 100px; border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+
+  .footer-link.gh { color: #58a6ff; }
+  .footer-link.gh:hover { background: rgba(88,166,255,0.08); border-color: rgba(88,166,255,0.3); }
+  .footer-link.li { color: #70b5f9; }
+  .footer-link.li:hover { background: rgba(10,102,194,0.1); border-color: rgba(10,102,194,0.4); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.2} }
+  @keyframes shimmer { 0%{transform:translateX(-100%)}100%{transform:translateX(100%)} }
+
+  /* SPACING HELPERS */
+  .mb-1 { margin-bottom: 1rem; }
+  .mb-2 { margin-bottom: 2rem; }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .topbar { padding: 0.85rem 1.2rem; }
+    .hero { padding: 2rem 1.2rem 1.2rem; }
+    .hero h1 { font-size: 2.1rem; }
+    .stats-row, .mgrid { padding: 0 1.2rem; }
+    .stats-row { padding-bottom: 1.5rem; }
+    .sec-label { padding: 1.8rem 1.2rem 0.9rem; }
+    .thankyou { margin: 1rem 1.2rem; }
+    footer { margin: 1.5rem 1.2rem 0; padding: 1.5rem 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="orb1"></div>
+<div class="orb2"></div>
+<div class="orb3"></div>
+
+<!-- ========================= LOGIN ========================= -->
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-dot">devops portal v2.1</div>
+      <h1 class="login-title">DevOps<br>Knowledge Hub</h1>
+      <p class="login-sub">// Enter credentials to access resources</p>
+
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="inp-name" placeholder="e.g. tejkiran" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="inp-email" placeholder="you@example.com" />
+      </div>
+
+      <button class="enter-btn" onclick="login()">Access Dashboard →</button>
+
+      <div class="login-divider">
+        <div class="login-divider-line"></div>
+        <span>explore</span>
+        <div class="login-divider-line"></div>
+      </div>
+
+      <div class="login-social">
+        <a href="https://github.com/kirantej860-bit" target="_blank" rel="noopener" class="social-hint">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:var(--text2)"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/tejkiran-devops" target="_blank" rel="noopener" class="social-hint">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:var(--text2)"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================= DASHBOARD ========================= -->
+<div id="dashboard-screen">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-icon">🚀</div>
+      <div>
+        <div class="brand-text">DevOps Hub <span>APIs · Auth · Licenses · Tools</span></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-ava" id="user-ava">TK</div>
+        <div class="user-info-small">
+          <div class="u-name" id="u-name">Loading</div>
+          <div class="u-email" id="u-email">loading...</div>
+        </div>
+      </div>
+      <button class="exit-btn" onclick="logout()">← Exit</button>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">✓ Access granted — all systems operational</div>
+    <h1><span class="static">Welcome, </span><span class="dynamic" id="hero-name">User</span></h1>
+    <p class="hero-sub">Your complete DevOps reference — free APIs, authentication patterns, license keys, cloud tools, cheat sheets and essential tooling, all in one secure portal.</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card sc-a">
+      <span class="stat-emoji">🌐</span>
+      <div class="stat-val" style="color:var(--accent)">12</div>
+      <div class="stat-label">Free APIs</div>
+    </div>
+    <div class="stat-card sc-g">
+      <span class="stat-emoji">🔐</span>
+      <div class="stat-val" style="color:var(--green)">6</div>
+      <div class="stat-label">Auth Methods</div>
+    </div>
+    <div class="stat-card sc-am">
+      <span class="stat-emoji">📋</span>
+      <div class="stat-val" style="color:var(--amber)">8</div>
+      <div class="stat-label">License Types</div>
+    </div>
+    <div class="stat-card sc-p">
+      <span class="stat-emoji">🛠️</span>
+      <div class="stat-val" style="color:var(--purple)">20+</div>
+      <div class="stat-label">DevOps Tools</div>
+    </div>
+    <div class="stat-card sc-c">
+      <span class="stat-emoji">⚡</span>
+      <div class="stat-val" style="color:var(--cyan)">7</div>
+      <div class="stat-label">Pipeline Stages</div>
+    </div>
+    <div class="stat-card sc-pk">
+      <span class="stat-emoji">✨</span>
+      <div class="stat-val" style="color:var(--pink)">100%</div>
+      <div class="stat-label">Free Forever</div>
+    </div>
+  </div>
+
+  <!-- 01 APIs -->
+  <div class="sec-label">// 01 — Free APIs & Endpoints</div>
+  <div class="mgrid" style="margin-bottom: 0;">
+    <div class="scard">
+      <div class="ch">
+        <div class="ct">
+          <div class="ci" style="background:rgba(62,207,142,0.1)">🌐</div>
+          Public REST APIs
+        </div>
+        <span class="badge b-green">Free Tier</span>
+      </div>
+      <div class="cb">
+        <div class="api-item">
+          <div class="api-top"><div class="api-name">GitHub REST API</div><span class="badge b-blue">REST</span></div>
+          <div class="api-url">https://api.github.com</div>
+          <div class="api-desc">Repos, issues, PRs, users, actions workflows. 60 req/hr unauthenticated, 5000/hr with token. Essential for CI/CD integrations and automations.</div>
+        </div>
+        <div class="api-item">
+          <div class="api-top"><div class="api-name">Docker Hub API v2</div><span class="badge b-blue">REST</span></div>
+          <div class="api-url">https://hub.docker.com/v2</div>
+          <div class="api-desc">Image metadata, tags, manifests and layer info. Rate limited per IP. Authenticate via Bearer token for private repos.</div>
+        </div>
+        <div class="api-item">
+          <div class="api-top"><div class="api-name">JSONPlaceholder</div><span class="badge b-green">Mock</span></div>
+          <div class="api-url">https://jsonplaceholder.typicode.com</div>
+          <div class="api-desc">Fake REST API for testing and prototyping. Full CRUD support — GET/POST/PUT/PATCH/DELETE. No auth needed. 100+ sample records.</div>
+        </div>
+        <div class="api-item">
+          <div class="api-top"><div class="api-name">OpenWeather API</div><span class="badge b-amber">Key Needed</span></div>
+          <div class="api-url">https://api.openweathermap.org/data/2.5</div>
+          <div class="api-desc">Current weather, 5-day forecasts, historical data. Free tier: 60 calls/min, 1M calls/month. Useful for infra environment monitoring.</div>
+        </div>
+        <div class="api-item">
+          <div class="api-top"><div class="api-name">ipify — Public IP API</div><span class="badge b-green">Free</span></div>
+          <div class="api-url">https://api.ipify.org?format=json</div>
+          <div class="api-desc">Returns your public IP in JSON/text. No auth, no rate limit. Useful in scripts to detect NAT IPs, firewall whitelisting, and dynamic DNS updates.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scard">
+      <div class="ch">
+        <div class="ct">
+          <div class="ci" style="background:rgba(79,156,255,0.1)">⚙️</div>
+          DevOps & Infra APIs
+        </div>
+        <span class="badge b-blue">Ops Grade</span>
+      </div>
+      <div class="cb">
+        <div class="api-item">
+          <div class="api-top"><div class="api-name">Kubernetes API Server</div><span class="badge b-purple">K8s</span></div>
+          <div class="api-url">https://&lt;cluster&gt;:6443/api/v1</div>
+          <div class="api-desc">Full cluster control — pods, services, deployments, namespaces. Auth via ServiceAccount token or kubeconfig. kubectl is a REST client under the hood.</div>
+        </div>
+        <div class="api-item">
+          <div class="api-top"><div class="api-name">Prometheus HTTP API</div><span class="badge b-amber">Metrics</span></div>
+          <div class="api-url">http://localhost:9090/api/v1</div>
+          <div class="api-desc">Instant/range queries, targets, alerts, rules. Used for dashboards and alerting pipelines. Add nginx basic auth or OAuth proxy in production.</div>
+        </div>
+        <div class="api-item">
+          <div class="api-top"><div class="api-name">HashiCorp Vault API</div><span class="badge b-red">Secrets</span></div>
+          <div class="api-url">https://vault.example.com/v1</div>
+          <div class="api-desc">Read/write secrets, manage policies and tokens. Auth via AppRole, AWS IAM, Kubernetes SA. Industry standard secrets management.</div>
+        </div>
+        <div class="api-item">
+          <div class="api-top"><div class="api-name">Grafana HTTP API</div><span class="badge b-amber">Dashboards</span></div>
+          <div class="api-url">https://grafana.example.com/api</div>
+          <div class="api-desc">Manage dashboards, datasources, orgs and users programmatically. API keys or service accounts. Enables GitOps-style dashboard provisioning via code.</div>
+        </div>
+        <div class="api-item">
+          <div class="api-top"><div class="api-name">Terraform Cloud API</div><span class="badge b-purple">IaC</span></div>
+          <div class="api-url">https://app.terraform.io/api/v2</div>
+          <div class="api-desc">Trigger runs, manage workspaces, variables and state. Free tier includes 500 managed resources. Integrate with GitHub webhooks for GitOps.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 AUTH -->
+  <div class="sec-label">// 02 — Authentication Methods</div>
+  <div class="mgrid" style="margin-bottom: 0;">
+    <div class="scard">
+      <div class="ch">
+        <div class="ct"><div class="ci" style="background:rgba(246,185,59,0.1)">🔐</div>Token & Web Auth</div>
+        <span class="badge b-amber">Stateless</span>
+      </div>
+      <div class="cb">
+        <div class="auth-row">
+          <div class="auth-icon" style="background:rgba(79,156,255,0.1)">🎟️</div>
+          <div>
+            <div class="auth-title">JWT — JSON Web Token</div>
+            <div class="auth-desc">Self-contained tokens signed with HMAC-SHA256 or RSA. Format: Header.Payload.Signature. Stateless — zero DB lookup. Used in Kubernetes, Vault, Firebase and most modern APIs. Expiry via <code style="font-family:var(--mono);color:var(--cyan);font-size:10.5px">exp</code> claim.</div>
+            <div class="code-block">
+              <span class="c-com"># Send JWT in Authorization header</span><br>
+              <span class="c-key">Authorization</span>: <span class="c-val">Bearer</span> <span class="c-str">eyJhbGciOiJIUzI1NiJ9...</span>
+            </div>
+          </div>
+        </div>
+        <div class="auth-row">
+          <div class="auth-icon" style="background:rgba(62,207,142,0.1)">🔑</div>
+          <div>
+            <div class="auth-title">API Key Authentication</div>
+            <div class="auth-desc">Static keys via header or query param. Simple but requires rotation policy. Use <code style="font-family:var(--mono);color:var(--cyan);font-size:10.5px">X-API-Key</code> or <code style="font-family:var(--mono);color:var(--cyan);font-size:10.5px">Authorization: ApiKey</code>. Ideal for machine-to-machine calls where OAuth overhead is unnecessary.</div>
+            <div class="key-row">
+              <div class="key-val">sk-proj-xK9mL3nPqR8vT2wY5zQ7aB1cD4eF6gH...</div>
+              <button class="copy-btn" onclick="copyKey(this,'sk-proj-xK9mL3nPqR8vT2wY5zQ7aB1cD4eF6gH0iJ')">Copy</button>
+            </div>
+          </div>
+        </div>
+        <div class="auth-row">
+          <div class="auth-icon" style="background:rgba(167,139,250,0.1)">🔒</div>
+          <div>
+            <div class="auth-title">OAuth 2.0 / OIDC</div>
+            <div class="auth-desc">Industry standard delegated authorization. Four flows: Authorization Code, Client Credentials, Device, PKCE. OIDC adds identity on top. Powers GitHub Actions OIDC, GCP Workload Identity, AWS IRSA, and enterprise SSO (Okta, Azure AD, Keycloak).</div>
+          </div>
+        </div>
+        <div class="auth-row">
+          <div class="auth-icon" style="background:rgba(34,211,238,0.1)">🍪</div>
+          <div>
+            <div class="auth-title">Session + Cookie Auth</div>
+            <div class="auth-desc">Server stores session state, client receives signed cookie. Simpler for browser apps. Use <code style="font-family:var(--mono);color:var(--cyan);font-size:10.5px">HttpOnly; Secure; SameSite=Strict</code> flags. Requires sticky sessions or shared Redis in clustered deployments.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scard">
+      <div class="ch">
+        <div class="ct"><div class="ci" style="background:rgba(255,107,157,0.1)">🛡️</div>Infrastructure Auth</div>
+        <span class="badge b-purple">Infra</span>
+      </div>
+      <div class="cb">
+        <div class="auth-row">
+          <div class="auth-icon" style="background:rgba(62,207,142,0.1)">🖧</div>
+          <div>
+            <div class="auth-title">SSH Key Authentication</div>
+            <div class="auth-desc">Asymmetric key pairs for server access. Public key goes in <code style="font-family:var(--mono);color:var(--cyan);font-size:10.5px">~/.ssh/authorized_keys</code>. Prefer Ed25519 over RSA. Use ssh-agent and ForwardAgent in CI pipelines.</div>
+            <div class="code-block">
+              <span class="c-com"># Generate Ed25519 key pair</span><br>
+              <span class="c-cmd">ssh-keygen</span> <span class="c-val">-t ed25519</span> <span class="c-str">-C "devops@ci"</span><br>
+              <span class="c-cmd">ssh-copy-id</span> <span class="c-val">-i ~/.ssh/id_ed25519.pub</span> <span class="c-str">user@host</span>
+            </div>
+          </div>
+        </div>
+        <div class="auth-row">
+          <div class="auth-icon" style="background:rgba(246,185,59,0.1)">☁️</div>
+          <div>
+            <div class="auth-title">AWS IAM / IRSA</div>
+            <div class="auth-desc">IAM Roles for Service Accounts — attach AWS roles to K8s pods without static credentials. Temporary STS tokens auto-rotate every 15min. Works with EKS, GitHub Actions OIDC, Terraform Cloud, and cross-account access patterns.</div>
+          </div>
+        </div>
+        <div class="auth-row">
+          <div class="auth-icon" style="background:rgba(79,156,255,0.1)">📜</div>
+          <div>
+            <div class="auth-title">mTLS — Mutual TLS</div>
+            <div class="auth-desc">Both client and server present X.509 certificates. Zero-trust standard for service mesh (Istio, Linkerd). Managed via cert-manager + Let's Encrypt or internal CA. Enforced at L4 — invisible to application code.</div>
+          </div>
+        </div>
+        <div class="auth-row">
+          <div class="auth-icon" style="background:rgba(62,207,142,0.1)">🤖</div>
+          <div>
+            <div class="auth-title">Vault AppRole</div>
+            <div class="auth-desc">Machine-to-machine auth for CI/CD. App presents RoleID + SecretID to obtain a short-lived Vault token. SecretID can be wrapped (response-wrapping) for one-time delivery. Principle of least privilege built-in.</div>
+            <div class="code-block">
+              <span class="c-com"># Authenticate with AppRole</span><br>
+              <span class="c-cmd">curl</span> <span class="c-val">-X POST</span> <span class="c-str">$VAULT_ADDR/v1/auth/approle/login</span><br>
+              <span class="c-key">  -d</span> <span class="c-str">'{"role_id":"...","secret_id":"..."}'</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 LICENSES -->
+  <div class="sec-label">// 03 — License Keys & Types</div>
+  <div class="mgrid full" style="margin-bottom: 0;">
+    <div class="scard">
+      <div class="ch">
+        <div class="ct"><div class="ci" style="background:rgba(167,139,250,0.1)">📋</div>Software License Reference</div>
+        <span class="badge b-purple">Reference</span>
+      </div>
+      <div class="cb">
+        <div style="overflow-x:auto">
+          <table class="lic-table">
+            <tr>
+              <th>License</th>
+              <th>Category</th>
+              <th>Commercial</th>
+              <th>Modify</th>
+              <th>Distribute</th>
+              <th>Common DevOps Usage</th>
+            </tr>
+            <tr>
+              <td><div class="lic-name">MIT</div><div class="lic-sub">Permissive</div></td>
+              <td><span class="badge b-green">Open Source</span></td>
+              <td>✅ Yes</td><td>✅ Yes</td><td>✅ Yes</td>
+              <td>Node.js libs, scripts, CLI tools</td>
+            </tr>
+            <tr>
+              <td><div class="lic-name">Apache 2.0</div><div class="lic-sub">Permissive</div></td>
+              <td><span class="badge b-green">Open Source</span></td>
+              <td>✅ Yes</td><td>✅ Yes</td><td>✅ Yes</td>
+              <td>Kubernetes, Kafka, Jenkins, Terraform</td>
+            </tr>
+            <tr>
+              <td><div class="lic-name">GPL v3</div><div class="lic-sub">Copyleft</div></td>
+              <td><span class="badge b-amber">Copyleft</span></td>
+              <td>⚠️ Conditional</td><td>✅ Yes</td><td>✅ Yes</td>
+              <td>Linux kernel, GNU tools, Bash scripts</td>
+            </tr>
+            <tr>
+              <td><div class="lic-name">BSL 1.1</div><div class="lic-sub">Source-available</div></td>
+              <td><span class="badge b-red">Restricted</span></td>
+              <td>❌ No (prod)</td><td>⚠️ Limited</td><td>⚠️ Limited</td>
+              <td>HashiCorp Vault / Terraform (2023+)</td>
+            </tr>
+            <tr>
+              <td><div class="lic-name">SSPL</div><div class="lic-sub">Source-available</div></td>
+              <td><span class="badge b-red">Restricted</span></td>
+              <td>❌ No (SaaS)</td><td>⚠️ Limited</td><td>⚠️ Limited</td>
+              <td>MongoDB, Elasticsearch (old builds)</td>
+            </tr>
+            <tr>
+              <td><div class="lic-name">Docker Personal</div><div class="lic-sub">Freemium</div></td>
+              <td><span class="badge b-blue">Freemium</span></td>
+              <td>⚠️ Non-commercial</td><td>❌ No</td><td>❌ No</td>
+              <td>Local dev only — teams need paid plan</td>
+            </tr>
+            <tr>
+              <td><div class="lic-name">AGPL v3</div><div class="lic-sub">Network Copyleft</div></td>
+              <td><span class="badge b-amber">Copyleft</span></td>
+              <td>⚠️ Disclose source</td><td>✅ Yes</td><td>✅ Yes</td>
+              <td>Grafana OSS, Nextcloud, Gitea</td>
+            </tr>
+            <tr>
+              <td><div class="lic-name">Proprietary</div><div class="lic-sub">Closed Source</div></td>
+              <td><span class="badge b-red">Closed</span></td>
+              <td>✅ (paid)</td><td>❌ No</td><td>❌ No</td>
+              <td>DataDog, Splunk, GitLab EE, PagerDuty</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border)">
+          <div style="font-size:10px; color:var(--text3); font-family:var(--mono); margin-bottom:12px; letter-spacing:0.1em; text-transform:uppercase">Sample Key Formats — For Reference Only</div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:10px">
+            <div>
+              <div style="font-size:10px; color:var(--text3); font-family:var(--mono); margin-bottom:6px">JETBRAINS / IDE</div>
+              <div class="key-row"><div class="key-val">IJUL-232-7B3F8A-2E1D9C-4F7A0B</div><button class="copy-btn" onclick="copyKey(this,'IJUL-232-7B3F8A-2E1D9C-4F7A0B')">Copy</button></div>
+            </div>
+            <div>
+              <div style="font-size:10px; color:var(--text3); font-family:var(--mono); margin-bottom:6px">AWS ACCESS KEY</div>
+              <div class="key-row"><div class="key-val">AKIAIOSFODNN7EXAMPLE</div><button class="copy-btn" onclick="copyKey(this,'AKIAIOSFODNN7EXAMPLE')">Copy</button></div>
+            </div>
+            <div>
+              <div style="font-size:10px; color:var(--text3); font-family:var(--mono); margin-bottom:6px">GITHUB PAT</div>
+              <div class="key-row"><div class="key-val">ghp_R4nD0mT0k3nXYZ1234567890ab</div><button class="copy-btn" onclick="copyKey(this,'ghp_R4nD0mT0k3nXYZ1234567890ab')">Copy</button></div>
+            </div>
+            <div>
+              <div style="font-size:10px; color:var(--text3); font-family:var(--mono); margin-bottom:6px">K8s SERVICE ACCOUNT TOKEN</div>
+              <div class="key-row"><div class="key-val">eyJhbGciOiJSUzI1NiIsImtpZCI6I...</div><button class="copy-btn" onclick="copyKey(this,'eyJhbGciOiJSUzI1NiIsImtpZCI6IkFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaIn0')">Copy</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 TOOLS -->
+  <div class="sec-label">// 04 — DevOps Toolchain</div>
+  <div class="mgrid" style="margin-bottom:0">
+    <div class="scard">
+      <div class="ch">
+        <div class="ct"><div class="ci" style="background:rgba(79,156,255,0.1)">🛠️</div>Essential Tools</div>
+        <span class="badge b-blue">Full Stack</span>
+      </div>
+      <div class="cb">
+        <div class="tools-grid">
+          <div class="tool-tile"><span class="tool-em">🐳</span><div class="tool-name">Docker</div><div class="tool-cat">Containers</div></div>
+          <div class="tool-tile"><span class="tool-em">☸️</span><div class="tool-name">Kubernetes</div><div class="tool-cat">Orchestration</div></div>
+          <div class="tool-tile"><span class="tool-em">🏗️</span><div class="tool-name">Terraform</div><div class="tool-cat">IaC</div></div>
+          <div class="tool-tile"><span class="tool-em">📦</span><div class="tool-name">Ansible</div><div class="tool-cat">Config Mgmt</div></div>
+          <div class="tool-tile"><span class="tool-em">🔵</span><div class="tool-name">Jenkins</div><div class="tool-cat">CI/CD</div></div>
+          <div class="tool-tile"><span class="tool-em">🦊</span><div class="tool-name">GitLab CI</div><div class="tool-cat">CI/CD</div></div>
+          <div class="tool-tile"><span class="tool-em">⚡</span><div class="tool-name">GH Actions</div><div class="tool-cat">CI/CD</div></div>
+          <div class="tool-tile"><span class="tool-em">📊</span><div class="tool-name">Prometheus</div><div class="tool-cat">Monitoring</div></div>
+          <div class="tool-tile"><span class="tool-em">📈</span><div class="tool-name">Grafana</div><div class="tool-cat">Dashboards</div></div>
+          <div class="tool-tile"><span class="tool-em">🔐</span><div class="tool-name">Vault</div><div class="tool-cat">Secrets</div></div>
+          <div class="tool-tile"><span class="tool-em">🌊</span><div class="tool-name">ArgoCD</div><div class="tool-cat">GitOps</div></div>
+          <div class="tool-tile"><span class="tool-em">🕸️</span><div class="tool-name">Istio</div><div class="tool-cat">Service Mesh</div></div>
+          <div class="tool-tile"><span class="tool-em">📡</span><div class="tool-name">Jaeger</div><div class="tool-cat">Tracing</div></div>
+          <div class="tool-tile"><span class="tool-em">🐘</span><div class="tool-name">Helm</div><div class="tool-cat">K8s Pkg Mgr</div></div>
+          <div class="tool-tile"><span class="tool-em">🔎</span><div class="tool-name">Trivy</div><div class="tool-cat">Sec Scan</div></div>
+          <div class="tool-tile"><span class="tool-em">🧱</span><div class="tool-name">Pulumi</div><div class="tool-cat">IaC (SDK)</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scard">
+      <div class="ch">
+        <div class="ct"><div class="ci" style="background:rgba(62,207,142,0.1)">🔄</div>CI/CD Pipeline Flow</div>
+        <span class="badge b-green">Pipeline</span>
+      </div>
+      <div class="cb">
+        <div class="pipeline">
+          <div class="pipe-step"><div class="pipe-icon">💻</div><div class="pipe-name">Code</div><div class="pipe-sub">git push</div></div>
+          <div class="pipe-arr">→</div>
+          <div class="pipe-step"><div class="pipe-icon">🧪</div><div class="pipe-name">Build</div><div class="pipe-sub">compile + lint</div></div>
+          <div class="pipe-arr">→</div>
+          <div class="pipe-step"><div class="pipe-icon">✅</div><div class="pipe-name">Test</div><div class="pipe-sub">unit + e2e</div></div>
+          <div class="pipe-arr">→</div>
+          <div class="pipe-step"><div class="pipe-icon">🐳</div><div class="pipe-name">Package</div><div class="pipe-sub">docker build</div></div>
+          <div class="pipe-arr">→</div>
+          <div class="pipe-step"><div class="pipe-icon">🔍</div><div class="pipe-name">Scan</div><div class="pipe-sub">Trivy/Snyk</div></div>
+          <div class="pipe-arr">→</div>
+          <div class="pipe-step"><div class="pipe-icon">🚀</div><div class="pipe-name">Deploy</div><div class="pipe-sub">K8s/ArgoCD</div></div>
+          <div class="pipe-arr">→</div>
+          <div class="pipe-step"><div class="pipe-icon">📊</div><div class="pipe-name">Monitor</div><div class="pipe-sub">Prometheus</div></div>
+        </div>
+
+        <div style="margin-top:1.5rem; padding-top:1.4rem; border-top:1px solid var(--border)">
+          <div class="cheat-grid">
+            <div class="cheat-section">
+              <div class="cheat-label">Docker Commands</div>
+              <div class="code-block">
+                <span class="c-com"># Build & tag</span><br>
+                <span class="c-cmd">docker build</span> <span class="c-val">-t</span> <span class="c-str">tejkiran/app:v1</span> .<br>
+                <span class="c-com"># Run detached</span><br>
+                <span class="c-cmd">docker run</span> <span class="c-val">-d -p 8080:80</span> <span class="c-str">tejkiran/app:v1</span><br>
+                <span class="c-com"># Push to registry</span><br>
+                <span class="c-cmd">docker push</span> <span class="c-str">tejkiran/app:v1</span><br>
+                <span class="c-com"># Prune unused</span><br>
+                <span class="c-cmd">docker system prune</span> <span class="c-val">-af</span>
+              </div>
+            </div>
+            <div class="cheat-section">
+              <div class="cheat-label">Kubectl Commands</div>
+              <div class="code-block">
+                <span class="c-com"># Get all resources</span><br>
+                <span class="c-cmd">kubectl get</span> <span class="c-val">all -n</span> <span class="c-str">production</span><br>
+                <span class="c-com"># Apply manifest</span><br>
+                <span class="c-cmd">kubectl apply</span> <span class="c-val">-f</span> <span class="c-str">deploy.yaml</span><br>
+                <span class="c-com"># Rollout status</span><br>
+                <span class="c-cmd">kubectl rollout</span> <span class="c-val">status deploy/</span><span class="c-str">app</span><br>
+                <span class="c-com"># Logs follow</span><br>
+                <span class="c-cmd">kubectl logs</span> <span class="c-val">-f</span> <span class="c-str">pod-name</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 AUTHOR PROFILES -->
+  <div class="sec-label">// 05 — Author Profiles</div>
+  <div class="mgrid" style="margin-bottom:0">
+
+    <!-- GITHUB CARD -->
+    <div class="github-card">
+      <div class="gh-inner">
+        <div class="gh-avatar">KT</div>
+        <div class="gh-info">
+          <div class="gh-name">kirantej860-bit</div>
+          <div class="gh-handle">@kirantej860-bit · GitHub</div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <a href="https://github.com/kirantej860-bit" target="_blank" rel="noopener" class="gh-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+              View GitHub Profile
+            </a>
+            <a href="https://github.com/kirantej860-bit?tab=repositories" target="_blank" rel="noopener" class="gh-btn" style="background:rgba(45,186,78,0.08);border-color:rgba(45,186,78,0.2);color:#2dba4e">
+              📂 Repositories
+            </a>
+          </div>
+
+          <div class="gh-stats">
+            <div class="gh-stat"><div class="gh-stat-val">🐳</div><div class="gh-stat-label">Docker Expert</div></div>
+            <div class="gh-stat"><div class="gh-stat-val">☸️</div><div class="gh-stat-label">K8s Certified</div></div>
+            <div class="gh-stat"><div class="gh-stat-val">🏗️</div><div class="gh-stat-label">IaC Engineer</div></div>
+          </div>
+
+          <div class="gh-langs">
+            <span class="lang-tag"><span class="lang-dot" style="background:#3572A5"></span>Python</span>
+            <span class="lang-tag"><span class="lang-dot" style="background:#f1e05a"></span>JavaScript</span>
+            <span class="lang-tag"><span class="lang-dot" style="background:#89e051"></span>Shell/Bash</span>
+            <span class="lang-tag"><span class="lang-dot" style="background:#0f4fc1"></span>HCL</span>
+            <span class="lang-tag"><span class="lang-dot" style="background:#e34c26"></span>Dockerfile</span>
+            <span class="lang-tag"><span class="lang-dot" style="background:#cbcb41"></span>YAML</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINKEDIN CARD -->
+    <div class="linkedin-card">
+      <div class="li-inner">
+        <div class="li-avatar">TK</div>
+        <div class="li-info">
+          <div class="li-name">TejKiran</div>
+          <div class="li-title">DevOps Engineer · Docker · Kubernetes · CI/CD · Cloud Infrastructure · GitOps</div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <a href="https://www.linkedin.com/in/tejkiran-devops" target="_blank" rel="noopener" class="li-btn">
+              <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              Connect on LinkedIn
+            </a>
+            <a href="https://www.linkedin.com/in/tejkiran-devops" target="_blank" rel="noopener" class="li-btn" style="background:transparent; border:1px solid rgba(10,102,194,0.3); color:#70b5f9">
+              📨 Send Message
+            </a>
+          </div>
+
+          <div class="li-stats">
+            <div class="li-stat"><div class="li-stat-val">500+</div><div class="li-stat-label">Connections</div></div>
+            <div class="li-stat"><div class="li-stat-val">3+</div><div class="li-stat-label">Years DevOps</div></div>
+            <div class="li-stat"><div class="li-stat-val">20+</div><div class="li-stat-label">Docker Images</div></div>
+          </div>
+
+          <div class="skills-cloud">
+            <span class="skill-tag">Docker</span>
+            <span class="skill-tag">Kubernetes</span>
+            <span class="skill-tag">Terraform</span>
+            <span class="skill-tag">Jenkins</span>
+            <span class="skill-tag">GitLab CI</span>
+            <span class="skill-tag">Prometheus</span>
+            <span class="skill-tag">ArgoCD</span>
+            <span class="skill-tag">AWS</span>
+            <span class="skill-tag">Vault</span>
+            <span class="skill-tag">Ansible</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- THANK YOU -->
+  <div class="thankyou" style="margin-top:2rem">
+    <div style="font-size:2rem; margin-bottom:10px">🎉</div>
+    <div class="ty-title">Thank You for Using My Docker Image!</div>
+    <p class="ty-sub">Your support means everything. This image was crafted with love for the DevOps community — built for speed, security, and reliability. Star the repo and share with your team!</p>
+    <div class="ty-pills">
+      <div class="ty-pill">🐳 docker pull tejkiran/devops-tools:latest</div>
+      <a href="https://github.com/kirantej860-bit" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#58a6ff;font-family:var(--mono);font-size:11.5px;text-decoration:none;border:1px solid rgba(88,166,255,0.2);border-radius:100px;padding:6px 16px;transition:border-color 0.2s" onmouseover="this.style.borderColor='rgba(88,166,255,0.4)'" onmouseout="this.style.borderColor='rgba(88,166,255,0.2)'">
+        ⭐ Star on GitHub
+      </a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-left">Built with ❤️ by TejKiran · DevOps Knowledge Portal · Educational purposes</div>
+    <div class="footer-links">
+      <a href="https://github.com/kirantej860-bit" target="_blank" rel="noopener" class="footer-link gh">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+        kirantej860-bit
+      </a>
+      <a href="https://www.linkedin.com/in/tejkiran-devops" target="_blank" rel="noopener" class="footer-link li">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        tejkiran-devops
+      </a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  function login() {
+    const name = document.getElementById('inp-name').value.trim();
+    const email = document.getElementById('inp-email').value.trim();
+
+    if (!name) { shake('inp-name'); return; }
+    if (!email || !email.includes('@')) { shake('inp-email'); return; }
+
+    // Populate user data
+    const initials = name.slice(0, 2).toUpperCase();
+    document.getElementById('user-ava').textContent = initials;
+    document.getElementById('u-name').textContent = name;
+    document.getElementById('u-email').textContent = email;
+    document.getElementById('hero-name').textContent = name.charAt(0).toUpperCase() + name.slice(1);
+
+    // Transition
+    document.getElementById('login-screen').classList.add('hide');
+    setTimeout(() => {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard-screen').classList.add('show');
+      window.scrollTo(0, 0);
+    }, 500);
+  }
+
+  function logout() {
+    document.getElementById('dashboard-screen').classList.remove('show');
+    const loginEl = document.getElementById('login-screen');
+    loginEl.style.display = 'flex';
+    // Force reflow then remove hide class
+    loginEl.offsetHeight;
+    loginEl.classList.remove('hide');
+    document.getElementById('inp-name').value = '';
+    document.getElementById('inp-email').value = '';
+    window.scrollTo(0, 0);
+  }
+
+  function shake(id) {
+    const el = document.getElementById(id);
+    el.style.animation = 'none';
+    el.offsetHeight; // reflow
+    el.style.borderColor = 'var(--red)';
+    el.style.boxShadow = '0 0 0 3px rgba(231,76,60,0.15)';
+    setTimeout(() => {
+      el.style.borderColor = '';
+      el.style.boxShadow = '';
+    }, 1500);
+  }
+
+  function copyKey(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Done';
+      btn.style.color = 'var(--green)';
+      btn.style.borderColor = 'var(--green)';
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }, 2000);
+    });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const loginEl = document.getElementById('login-screen');
+      if (loginEl.style.display !== 'none' && !loginEl.classList.contains('hide')) {
+        login();
+      }
+    }
+  });
+</script>
+</body>
+</html>
